@@ -1,5 +1,5 @@
 import { setCookie, getCookie } from './cookie';
-import { TIngredient, TOrder, TOrdersData, TUser } from './types';
+import { TIngredient, TOrder, TUser } from './types';
 
 const URL = process.env.BURGER_API_URL;
 
@@ -142,6 +142,12 @@ type TAuthResponse = TServerResponse<{
   accessToken: string;
   user: TUser;
 }>;
+
+export const setCookieAuthResponse = (authResponse: TAuthResponse) => {
+  setCookie('accessToken', authResponse.accessToken);
+  localStorage.setItem('refreshToken', authResponse.refreshToken);
+  return authResponse.user;
+};
 
 export const registerUserApi = (data: TRegisterData) =>
   fetch(`${URL}/auth/register`, {
