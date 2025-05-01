@@ -1,20 +1,28 @@
 import { ReactNode } from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
+import { selectIsAuthorized } from '../../services/slices/userSlice';
+import { useSelector } from '../../services/store';
 
 type ProtectedProps = {
-  isAuthorized: boolean;
-  redirect: string;
   children: ReactNode;
+  anonymous: boolean;
 };
 
 export const ProtectedRoute = ({
-  isAuthorized,
-  redirect,
+  anonymous = false,
   children
 }: ProtectedProps) => {
-  if (!isAuthorized) {
-    return <Navigate to={redirect} replace />;
+  const isAuthorized = useSelector(selectIsAuthorized);
+
+  const location = useLocation();
+  const from = location.state?.from || '/';
+  if (anonymous && isAuthorized) {
+    return <Navigate to={from} />;
   }
 
-  return children ? children : <Outlet />;
+  if (!anonymous && !isAuthorized) {
+    return <Navigate to='/login' state={{ from: location }} />;
+  }
+
+  return children;
 };

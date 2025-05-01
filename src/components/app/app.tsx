@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from '../../services/store';
 import { getUser, selectIsAuthorized } from '../../services/slices/userSlice';
 import { useEffect } from 'react';
 import { selectOrderByNumber } from '../../services/slices/ordersSlice';
+import { getIngredients } from '../../services/slices/ingredientsSlice';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -28,7 +29,8 @@ const App = () => {
     if (!isAuthorized) {
       dispatch(getUser());
     }
-  }, [isAuthorized]);
+    dispatch(getIngredients());
+  }, [dispatch, isAuthorized]);
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as { background?: Location };
@@ -45,7 +47,7 @@ const App = () => {
         <Route
           path='/login'
           element={
-            <ProtectedRoute isAuthorized={!isAuthorized} redirect='/profile'>
+            <ProtectedRoute anonymous>
               <Login />
             </ProtectedRoute>
           }
@@ -53,7 +55,7 @@ const App = () => {
         <Route
           path='/register'
           element={
-            <ProtectedRoute isAuthorized={!isAuthorized} redirect='/profile'>
+            <ProtectedRoute anonymous>
               <Register />
             </ProtectedRoute>
           }
@@ -61,7 +63,7 @@ const App = () => {
         <Route
           path='/forgot-password'
           element={
-            <ProtectedRoute isAuthorized={!isAuthorized} redirect='/profile'>
+            <ProtectedRoute anonymous>
               <ForgotPassword />
             </ProtectedRoute>
           }
@@ -69,7 +71,7 @@ const App = () => {
         <Route
           path='/reset-password'
           element={
-            <ProtectedRoute isAuthorized={!isAuthorized} redirect='/profile'>
+            <ProtectedRoute anonymous>
               <ResetPassword />
             </ProtectedRoute>
           }
@@ -77,7 +79,7 @@ const App = () => {
         <Route
           path='/profile'
           element={
-            <ProtectedRoute isAuthorized={isAuthorized} redirect='/login'>
+            <ProtectedRoute anonymous={false}>
               <Profile />
             </ProtectedRoute>
           }
@@ -85,14 +87,21 @@ const App = () => {
         <Route
           path='/profile/orders'
           element={
-            <ProtectedRoute isAuthorized={isAuthorized} redirect='/login'>
+            <ProtectedRoute anonymous={false}>
               <ProfileOrders />
             </ProtectedRoute>
           }
         />
         <Route path='/feed/:number' element={<OrderInfo />} />
         <Route path='/ingredients/:id' element={<IngredientDetails />} />
-        <Route path='/profile/orders/:number' element={<OrderInfo />} />
+        <Route
+          path='/profile/orders/:number'
+          element={
+            <ProtectedRoute anonymous={false}>
+              <OrderInfo />
+            </ProtectedRoute>
+          }
+        />
         <Route path='*' element={<NotFound404 />} />
       </Routes>
       {state?.background && (
@@ -123,7 +132,7 @@ const App = () => {
                 title={currentOrder ? `${currentOrder.number}` : ''}
                 onClose={goBackward}
               >
-                <ProtectedRoute isAuthorized={isAuthorized} redirect='/login'>
+                <ProtectedRoute anonymous={false}>
                   <OrderInfo />
                 </ProtectedRoute>
               </Modal>
