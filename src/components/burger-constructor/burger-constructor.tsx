@@ -23,8 +23,11 @@ export const BurgerConstructor: FC = () => {
   const orderModalData = useSelector(selectCreatedOrder);
 
   const onOrderClick = () => {
+    if (!isAuthorized) {
+      navigate('/login');
+      return;
+    }
     if (!constructorItems.bun || orderRequest) return;
-    if (!isAuthorized) navigate('/login');
     const burgerIngredients = [
       constructorItems.bun,
       ...constructorItems.ingredients,
