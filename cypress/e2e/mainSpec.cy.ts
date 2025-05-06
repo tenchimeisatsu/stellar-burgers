@@ -30,8 +30,8 @@ beforeEach(() => {
   cy.visit('/');
 });
 afterEach(() => {
-  cy.clearCookie('accessToken');
-  window.localStorage.removeItem('refreshToken');
+  cy.clearCookies();
+  cy.clearLocalStorage();
 });
 describe('Burger constructor test', () => {
   it('should add ingredients correctly', () => {
@@ -46,7 +46,7 @@ describe('Burger constructor test', () => {
     cy.get('[data-cy=modal]').should('not.exist');
     cy.get('[data-cy^=bun]').first().click();
     cy.get('[data-cy=modal]').as('modal');
-    cy.get('@modal').should('contain.text', 'Детали');
+    cy.get('@modal').should('contain.text', 'Краторная булка N-200i');
     cy.closeModal();
     cy.get('@modal').should('not.exist');
     //check close by overlay
